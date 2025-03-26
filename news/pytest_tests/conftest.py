@@ -1,8 +1,10 @@
 import pytest
-
 from django.test.client import Client
+from django.utils import timezone
 
 from news.models import Comment, News
+from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
+from datetime import datetime, timedelta
 
 
 @pytest.fixture
@@ -54,3 +56,30 @@ def comment_id(comment):
 @pytest.fixture
 def news_id(news):
     return news.id,
+
+@pytest.fixture
+def all_news():
+    today = datetime.today()
+    for index in range(NEWS_COUNT_ON_HOME_PAGE + 1):
+        news = News.objects.create(
+            title=f'Новость {index}',
+            text='Просто текст.',
+            date=today - timedelta(days=index),
+        )
+        news.save()
+    return index
+
+@pytest.fixture
+def comments(author, news):
+    now = timezone.now()
+    comments = []
+    for index in range(2):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text=f'Текст {index}',
+        )
+        comment.created = now + timedelta(days=index)
+        comment.save()
+        comments.append(comment)
+    return comments
