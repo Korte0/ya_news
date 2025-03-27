@@ -83,3 +83,9 @@ def comments(author, news):
         comment.save()
         comments.append(comment)
     return comments
+
+@pytest.fixture
+def form_data():
+    return {
+        'text': 'Новый текст'
+    }
