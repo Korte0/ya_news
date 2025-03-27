@@ -18,7 +18,7 @@ def test_user_can_create_comment(author_client, author, news_id, form_data):
     assert new_comment.author == author
 
 @pytest.mark.django_db
-def test_anonymous_user_cant_create_note(client, form_data, news_id):
+def test_anonymous_user_cant_create_comment(client, form_data, news_id):
     url = reverse('news:detail', args=news_id)
     response = client.post(url, data=form_data)
     login_url = reverse('users:login')

@@ -2,7 +2,6 @@ import pytest
 from django.urls import reverse
 
 from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
-from news.forms import CommentForm
 
 
 HOME_URL = reverse('news:home')
