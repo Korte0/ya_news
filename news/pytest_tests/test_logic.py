@@ -13,11 +13,11 @@ FORM_DATA = {'text': 'Новый текст'}
 
 
 def test_user_can_create_comment(author_client, author, news):
+    Comment.objects.filter().delete()
     response = author_client.post(URL.detail, data=FORM_DATA)
     assertRedirects(response, f'{URL.detail}#comments')
     assert Comment.objects.count() == 1
     new_comment = Comment.objects.get()
-    Comment.objects.filter().delete()
     assert all(
         (
             new_comment.text == FORM_DATA['text'],
