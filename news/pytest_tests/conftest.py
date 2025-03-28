@@ -1,10 +1,38 @@
 import pytest
+from datetime import datetime, timedelta
+from collections import namedtuple
+
+from django.conf import settings
 from django.test.client import Client
+from django.urls import reverse
 from django.utils import timezone
 
 from news.models import Comment, News
-from yanews.settings import NEWS_COUNT_ON_HOME_PAGE
-from datetime import datetime, timedelta
+
+PK = 1
+
+URL_NAME = namedtuple(
+    'URL_NAME',
+    [
+        'home',
+        'detail',
+        'edit',
+        'delete',
+        'login',
+        'logout',
+        'signup',
+    ],
+)
+
+URL = URL_NAME(
+    reverse('news:home'),
+    reverse('news:detail', args=(PK,)),
+    reverse('news:edit', args=(PK,)),
+    reverse('news:delete', args=(PK,)),
+    reverse('users:login'),
+    reverse('users:logout'),
+    reverse('users:signup'),
+)
 
 
 @pytest.fixture
@@ -13,7 +41,7 @@ def author(django_user_model):
 
 
 @pytest.fixture
-def not_author(django_user_model):  
+def not_author(django_user_model):
     return django_user_model.objects.create(username='Не автор')
 
 
@@ -49,25 +77,17 @@ def comment(author, news):
     )
     return comment
 
-@pytest.fixture
-def comment_id(comment):
-    return comment.id,
-
-@pytest.fixture
-def news_id(news):
-    return news.id,
 
 @pytest.fixture
 def all_news():
     today = datetime.today()
-    for index in range(NEWS_COUNT_ON_HOME_PAGE + 1):
+    for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
         news = News.objects.create(
             title=f'Новость {index}',
             text='Просто текст.',
             date=today - timedelta(days=index),
         )
-        news.save()
-    return index
+
 
 @pytest.fixture
 def comments(author, news):
@@ -81,11 +101,3 @@ def comments(author, news):
         )
         comment.created = now + timedelta(days=index)
         comment.save()
-        comments.append(comment)
-    return comments
-
-@pytest.fixture
-def form_data():
-    return {
-        'text': 'Новый текст'
-    }
