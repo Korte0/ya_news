@@ -1,7 +1,7 @@
-import pytest
 from datetime import datetime, timedelta
 from collections import namedtuple
 
+import pytest
 from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
@@ -9,7 +9,6 @@ from django.utils import timezone
 
 from news.models import Comment, News
 
-PK = 1
 
 URL_NAME = namedtuple(
     'URL_NAME',
@@ -26,9 +25,9 @@ URL_NAME = namedtuple(
 
 URL = URL_NAME(
     reverse('news:home'),
-    reverse('news:detail', args=(PK,)),
-    reverse('news:edit', args=(PK,)),
-    reverse('news:delete', args=(PK,)),
+    reverse('news:detail', args=(1,)),
+    reverse('news:edit', args=(1,)),
+    reverse('news:delete', args=(1,)),
     reverse('users:login'),
     reverse('users:logout'),
     reverse('users:signup'),
@@ -82,7 +81,7 @@ def comment(author, news):
 def all_news():
     today = datetime.today()
     for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
-        news = News.objects.create(
+        _ = News.objects.create(
             title=f'Новость {index}',
             text='Просто текст.',
             date=today - timedelta(days=index),
@@ -92,7 +91,7 @@ def all_news():
 @pytest.fixture
 def comments(author, news):
     now = timezone.now()
-    comments = []
+    _ = []
     for index in range(2):
         comment = Comment.objects.create(
             news=news,

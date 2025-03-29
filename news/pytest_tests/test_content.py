@@ -1,5 +1,4 @@
 import pytest
-
 from django.conf import settings
 
 from .conftest import URL
@@ -32,10 +31,12 @@ def test_comments_order(client, comments, news):
     assert all_timestamps == sorted_timestamps
 
 
-def test_client_has_form(client, author_client, news):
+def test_anonymous_client_has_no_form(client, news):
     response = client.get(URL.detail)
-    author_response = author_client.get(URL.detail)
-    assert (
-        isinstance(author_response.context['form'], CommentForm)
-        and 'form' not in response.context
-    )
+    assert 'form' not in response.context
+
+
+def test_authorized_client_has_form(author_client, news):
+    response = author_client.get(URL.detail)
+    assert 'form' in response.context
+    assert isinstance(response.context['form'], CommentForm)
