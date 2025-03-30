@@ -10,28 +10,48 @@ from django.utils import timezone
 from news.models import Comment, News
 
 
-URL_NAME = namedtuple(
-    'URL_NAME',
-    [
-        'home',
-        'detail',
-        'edit',
-        'delete',
-        'login',
-        'logout',
-        'signup',
-    ],
-)
+@pytest.fixture
+def news():
+    news = News.objects.create(
+        title='Заголовок',
+        text='Текст новости',
+    )
+    return news
 
-URL = URL_NAME(
-    reverse('news:home'),
-    reverse('news:detail', args=(1,)),
-    reverse('news:edit', args=(1,)),
-    reverse('news:delete', args=(1,)),
-    reverse('users:login'),
-    reverse('users:logout'),
-    reverse('users:signup'),
-)
+
+@pytest.fixture()
+def url_home():
+    return reverse('news:home')
+
+
+@pytest.fixture()
+def url_login():
+    return reverse('users:login')
+
+
+@pytest.fixture()
+def url_logout():
+    return reverse('users:logout')
+
+
+@pytest.fixture()
+def url_signup():
+    return reverse('users:signup')
+
+
+@pytest.fixture()
+def url_detail(news):
+    return reverse('news:detail', args=(news.id,))
+
+
+@pytest.fixture()
+def url_edit(news):
+    return reverse('news:edit', args=(news.id,))
+
+
+@pytest.fixture()
+def url_delete(news):
+    return reverse('news:delete', args=(news.id,))
 
 
 @pytest.fixture
@@ -59,15 +79,6 @@ def not_author_client(not_author):
 
 
 @pytest.fixture
-def news():
-    news = News.objects.create(
-        title='Заголовок',
-        text='Текст новости',
-    )
-    return news
-
-
-@pytest.fixture
 def comment(author, news):
     comment = Comment.objects.create(
         news=news,
@@ -81,7 +92,7 @@ def comment(author, news):
 def all_news():
     today = datetime.today()
     for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
-        _ = News.objects.create(
+        News.objects.create(
             title=f'Новость {index}',
             text='Просто текст.',
             date=today - timedelta(days=index),
@@ -91,7 +102,6 @@ def all_news():
 @pytest.fixture
 def comments(author, news):
     now = timezone.now()
-    _ = []
     for index in range(2):
         comment = Comment.objects.create(
             news=news,
