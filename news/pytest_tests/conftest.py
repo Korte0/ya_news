@@ -45,13 +45,13 @@ def url_detail(news):
 
 
 @pytest.fixture()
-def url_edit(news):
-    return reverse('news:edit', args=(news.id,))
+def url_edit(comment):
+    return reverse('news:edit', args=(comment.id,))
 
 
 @pytest.fixture()
-def url_delete(news):
-    return reverse('news:delete', args=(news.id,))
+def url_delete(comment):
+    return reverse('news:delete', args=(comment.id,))
 
 
 @pytest.fixture
